@@ -2,27 +2,26 @@
 
 ## Project Overview
 
-The Tiny House Cost Calculator is a **local TypeScript/Node.js CLI tool** that helps users plan and estimate the total cost of building a tiny house. Users can create named projects, add materials and components grouped by category, track costs automatically, and export a complete bill of materials to JSON or CSV.
+The Tiny House Cost Calculator is a **local TypeScript/Node.js application** with both **CLI and web interfaces** that helps users plan and estimate the total cost of building a tiny house. Users can create named projects, add materials and components grouped by category, track costs automatically, and export a complete bill of materials to JSON or CSV.
 
 **Key characteristics:**
 - Fully local — no network calls, no cloud services
 - Single JSON file storage at `~/.tiny-house-calculator/data.json`
 - Precise decimal arithmetic using `Decimal.js` to avoid floating-point errors
 - Property-based testing with `fast-check` for correctness guarantees
+- **Dual interface**: Use either the CLI or web browser to manage projects
 
 ## Architecture
 
-The application follows a layered architecture:
+The application follows a layered architecture with dual interfaces (CLI and Web):
 
 ```
-CLI Layer (Commander.js)
-  ↓
-Service Layer (business logic)
-  ↓
-Repository Layer (persistence)
-  ↓
-Storage (~/.tiny-house-calculator/data.json)
+CLI Layer (Commander.js) ──┐
+                           ├──> Service Layer ──> Repository ──> Storage
+Web Layer (Express + React)┘     (business logic)   (FileRepository)  (~/.tiny-house-calculator/data.json)
 ```
+
+Both interfaces share the same service layer and data store, ensuring consistency regardless of access method.
 
 ### Core Components
 
@@ -34,6 +33,14 @@ Storage (~/.tiny-house-calculator/data.json)
 | | `src/cli/bom.ts` | Bill of materials view command |
 | | `src/cli/export.ts` | Export commands (JSON/CSV) |
 | | `src/cli/formatter.ts` | Terminal output formatting |
+| **Web Server** | `web/server/index.ts` | Express server, CORS, JSON middleware |
+| | `web/server/routes/projects.ts` | REST API for projects |
+| | `web/server/routes/lineItems.ts` | REST API for line items |
+| | `web/server/routes/bom.ts` | REST API for bill of materials |
+| **Web Client** | `web/client/src/App.tsx` | React app with routing |
+| | `web/client/src/api/client.ts` | Fetch wrappers for API |
+| | `web/client/src/hooks/queries.ts` | React Query hooks |
+| | `web/client/src/components/*.tsx` | UI components (ProjectList, ProjectDetail, BomView) |
 | **Services** | `src/services/ProjectService.ts` | Project management, name uniqueness |
 | | `src/services/LineItemService.ts` | Line item CRUD, cost computation |
 | | `src/services/BomService.ts` | Assembles bill of materials |
@@ -147,6 +154,95 @@ $ thc export csv "Mountain Cabin"
 ✓ Exported to ./Mountain Cabin-bom.csv
 ```
 
+## Web Interface
+
+In addition to the CLI, the application provides a **modern web interface** built with React that offers the same functionality through an intuitive browser-based UI.
+
+### Running the Web Interface
+
+```bash
+# Development mode (runs both API server and React dev server)
+npm run dev:web
+
+# The web interface will be available at:
+# - Client: http://localhost:5173
+# - API Server: http://localhost:3000
+```
+
+Both the CLI and web interface can be used simultaneously — they share the same data store (`~/.tiny-house-calculator/data.json`), so changes made in one interface are immediately visible in the other after refresh.
+
+### Web Architecture
+
+**Backend (Express API Server)**:
+- **Port**: 3000
+- **Base URL**: `http://localhost:3000/api`
+- **Routes**: RESTful endpoints wrapping existing service layer
+  - `GET/POST/DELETE /api/projects` - Project management
+  - `GET/POST/PATCH/DELETE /api/projects/:name/items` - Line item management
+  - `GET /api/projects/:name/bom` - Bill of materials
+
+**Frontend (React SPA)**:
+- **Port**: 5173 (Vite dev server)
+- **Tech Stack**: React 18 + TypeScript + Tailwind CSS
+- **State Management**: TanStack Query (React Query) for server state
+- **Routing**: React Router v6 with three routes:
+  - `/` - Project list with create/delete
+  - `/projects/:projectName` - Project detail with line items table
+  - `/projects/:projectName/bom` - Bill of materials view
+
+**Key Features**:
+- **Full CRUD Operations**: Create, read, update, and delete projects and line items
+- **Real-time Cost Calculations**: Total costs update automatically
+- **BOM Generation**: View categorized bill of materials with subtotals
+- **Responsive Design**: Clean, modern UI built with Tailwind CSS
+- **Error Handling**: User-friendly error messages for validation failures
+- **Loading States**: Proper loading indicators for all async operations
+
+### Web Interface Workflow
+
+1. **View Projects**: Grid of project cards showing name, description, and item count
+2. **Create Project**: Modal form for entering project name and optional description
+3. **View Project Details**: Table of all line items with inline actions
+4. **Add Line Items**: Form with all fields (name, category dropdown, quantity, unit, unit cost, notes)
+5. **View BOM**: Formatted bill of materials grouped by category with grand total
+6. **Delete Items/Projects**: Confirmation dialogs before destructive actions
+
+### API Endpoints
+
+**Projects**:
+```
+GET    /api/projects              - List all projects
+POST   /api/projects              - Create project
+GET    /api/projects/:name        - Get project by name
+DELETE /api/projects/:name        - Delete project
+```
+
+**Line Items**:
+```
+GET    /api/projects/:name/items           - List line items
+POST   /api/projects/:name/items           - Add line item
+PATCH  /api/projects/:name/items/:itemId   - Update line item
+DELETE /api/projects/:name/items/:itemId   - Delete line item
+```
+
+**Bill of Materials**:
+```
+GET    /api/projects/:name/bom    - Get BOM for project
+```
+
+All endpoints return the standard `Result<T>` format:
+```typescript
+{ success: true, data: T } | { success: false, error: string }
+```
+
+### CLI and Web Interoperability
+
+Both interfaces work seamlessly together:
+- Create a project in the CLI → appears in browser after refresh
+- Add items in the web UI → visible immediately via `thc project get`
+- Delete project in browser → confirmed gone with `thc project list`
+- No conflicts or data corruption — atomic writes handle concurrent access
+
 ## Testing Strategy
 
 The project uses a **dual testing approach**:
@@ -194,10 +290,15 @@ Error messages follow the pattern:
 
 1. **Local JSON storage** — Simple, portable, no external dependencies
 2. **Commander.js for CLI** — Most widely used, well-typed Node.js CLI framework
-3. **csv-stringify for CSV export** — Part of mature `csv` ecosystem, TypeScript-native
-4. **Decimal.js for arithmetic** — Avoids floating-point rounding errors (`0.1 + 0.2 !== 0.3`)
-5. **fast-check for PBT** — Leading property-based testing library for TypeScript
-6. **Atomic writes** — Prevents data corruption via temp file + rename pattern
+3. **Express.js for API** — Lightweight HTTP server, minimal boilerplate for local tool
+4. **React + Vite for web UI** — Modern standard for TypeScript SPAs with fast dev server
+5. **TanStack Query** — Eliminates manual API state management, provides caching and optimistic updates
+6. **Tailwind CSS** — Rapid UI development with utility-first approach
+7. **csv-stringify for CSV export** — Part of mature `csv` ecosystem, TypeScript-native
+8. **Decimal.js for arithmetic** — Avoids floating-point rounding errors (`0.1 + 0.2 !== 0.3`)
+9. **fast-check for PBT** — Leading property-based testing library for TypeScript
+10. **Atomic writes** — Prevents data corruption via temp file + rename pattern
+11. **Shared service layer** — Both CLI and web interfaces use the same business logic, ensuring consistency
 
 ## File Structure
 
@@ -228,11 +329,37 @@ tiny-house-calculator/
 │   │   ├── bom.ts                # BOM view command
 │   │   ├── export.ts             # Export commands
 │   │   └── formatter.ts          # Terminal output formatting
-│   ├── index.ts                  # Entry point
+│   ├── index.ts                  # CLI entry point
 │   └── __tests__/
 │       ├── errors.test.ts
 │       ├── calculator.property.test.ts
 │       └── ...                   # Additional test files
+├── web/
+│   ├── server/                   # Express API server
+│   │   ├── index.ts              # Server entry point
+│   │   ├── routes/
+│   │   │   ├── projects.ts       # Project endpoints
+│   │   │   ├── lineItems.ts      # Line item endpoints
+│   │   │   └── bom.ts            # BOM endpoint
+│   │   └── tsconfig.json         # Server TypeScript config
+│   └── client/                   # React SPA
+│       ├── src/
+│       │   ├── main.tsx          # React entry point
+│       │   ├── App.tsx           # Router + layout
+│       │   ├── api/
+│       │   │   └── client.ts     # Fetch wrappers
+│       │   ├── hooks/
+│       │   │   └── queries.ts    # React Query hooks
+│       │   ├── components/
+│       │   │   ├── Layout.tsx
+│       │   │   ├── ProjectList.tsx
+│       │   │   ├── ProjectDetail.tsx
+│       │   │   └── BomView.tsx
+│       │   └── index.css         # Tailwind CSS
+│       ├── index.html
+│       ├── vite.config.ts        # Vite configuration
+│       ├── tailwind.config.js    # Tailwind configuration
+│       └── package.json          # Client dependencies
 ├── package.json
 ├── tsconfig.json
 ├── vitest.config.ts
@@ -242,9 +369,19 @@ tiny-house-calculator/
 ## Development Commands
 
 ```bash
+# CLI Development
 npm run build        # Compile TypeScript to dist/
 npm test             # Run all tests once
 npm run test:watch   # Run tests in watch mode
+
+# Web Interface Development
+npm run dev:web              # Run both API server and React dev server
+npm run dev:web:server       # Run only the API server (port 3000)
+npm run dev:web:client       # Run only the React dev server (port 5173)
+npm run build:web            # Build both server and client for production
+npm run build:web:server     # Build only the API server
+npm run build:web:client     # Build only the React client
+npm run start:web            # Start production web server
 ```
 
 ## Data Model

@@ -1,17 +1,33 @@
 # Tiny House Cost Calculator
 
-A local TypeScript/Node.js CLI tool for planning and estimating the total cost of building a tiny house. Manage materials, track costs automatically with precise decimal arithmetic, and export a complete bill of materials.
+A local TypeScript/Node.js application with **CLI and Web interfaces** for planning and estimating the total cost of building a tiny house. Manage materials, track costs automatically with precise decimal arithmetic, and export a complete bill of materials.
 
 ## Features
 
+- 🖥️ **Dual Interface** — Use either CLI or modern web browser interface
 - 📊 **Project Management** — Create named tiny house build projects with descriptions
 - 📝 **Line Item Tracking** — Add materials with quantity, unit cost, and category
 - 💰 **Automatic Cost Calculation** — Precise decimal arithmetic using Decimal.js (no floating-point errors)
 - 📂 **Category Organization** — Group materials by Foundation, Framing, Roofing, Electrical, Plumbing, etc.
 - 📤 **Export** — Generate JSON or CSV bill of materials
+- 🔄 **Seamless Interoperability** — CLI and web share the same data store
 - 🧪 **Property-Based Testing** — 10 correctness properties verified with 100 iterations each
 
-## Installation
+## Quick Start
+
+### Web Interface (Recommended for Visual UI)
+
+```bash
+npm install
+cd web/client && npm install && cd ../..
+npm run dev:web
+```
+
+Then open **http://localhost:5173** in your browser.
+
+See [WEB_QUICKSTART.md](./WEB_QUICKSTART.md) for complete web interface guide.
+
+### CLI Installation
 
 ```bash
 npm install
@@ -20,6 +36,24 @@ npm link  # Makes 'thc' command available globally
 ```
 
 ## Usage
+
+### Using the Web Interface
+
+1. Start the development servers:
+   ```bash
+   npm run dev:web
+   ```
+
+2. Open http://localhost:5173 in your browser
+
+3. Features:
+   - View all projects in a grid layout
+   - Create projects with name and description
+   - Add line items with category dropdown
+   - View bill of materials with category grouping
+   - Delete projects and items with confirmation
+
+### Using the CLI
 
 ### Project Management
 
@@ -96,6 +130,8 @@ thc export csv "Mountain Cabin" --output ./my-bom.csv
 
 ## Development
 
+### CLI Development
+
 ```bash
 # Install dependencies
 npm install
@@ -110,19 +146,31 @@ npm run test:watch
 npm run build
 ```
 
+### Web Interface Development
+
+```bash
+# Run both API server and client dev server
+npm run dev:web
+
+# Run servers separately
+npm run dev:web:server    # API only (port 3000)
+npm run dev:web:client    # Client only (port 5173)
+
+# Build for production
+npm run build:web
+```
+
 ## Architecture
 
-The application follows a layered architecture:
+The application follows a layered architecture with dual interfaces:
 
 ```
-CLI Layer (Commander.js)
-  ↓
-Service Layer (business logic)
-  ↓
-Repository Layer (persistence)
-  ↓
-Storage (~/.tiny-house-calculator/data.json)
+CLI Layer (Commander.js) ──┐
+                           ├──> Service Layer ──> Repository ──> Storage
+Web Layer (Express + React)┘     (business logic)   (FileRepository)  (~/.tiny-house-calculator/data.json)
 ```
+
+Both interfaces share the same service layer and data store, ensuring consistency.
 
 See [CLAUDE.md](./CLAUDE.md) for complete architecture documentation.
 

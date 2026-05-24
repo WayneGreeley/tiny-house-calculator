@@ -1,0 +1,27 @@
+{
+  "name": "tiny-house-calculator",
+  "version": "1.0.0",
+  "description": "A CLI tool for managing tiny house build project costs",
+  "type": "module",
+  "bin": {
+    "thc": "./dist/index.js"
+  },
+  "scripts": {
+    "build": "tsc",
+    "test": "vitest run",
+    "test:watch": "vitest"
+  },
+  "dependencies": {
+    "commander": "12.1.0",
+    "csv-stringify": "6.5.2",
+    "decimal.js": "10.4.3",
+    "uuid": "10.0.0"
+  },
+  "devDependencies": {
+    "@types/node": "22.10.2",
+    "@types/uuid": "10.0.0",
+    "fast-check": "3.23.2",
+    "typescript": "5.7.2",
+    "vitest": "2.1.8"
+  }
+}

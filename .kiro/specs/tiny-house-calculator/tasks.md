@@ -164,20 +164,20 @@ Build a local TypeScript/Node.js CLI tool (`thc`) that manages tiny house build 
 - [x] 8. Checkpoint — Ensure all service and repository tests pass
   - Ensure all tests pass, ask the user if questions arise.
 
-- [ ] 9. Implement the export module
-  - [~] 9.1 Implement `src/exporter.ts`
+- [x] 9. Implement the export module
+  - [x] 9.1 Implement `src/exporter.ts`
     - Export `writeAtomic(filePath: string, content: string): Promise<void>` — writes to `<filePath>.tmp` then renames; wraps errors in `ExportError` and cleans up the `.tmp` file before re-throwing
     - Export `exportJson(bom: BillOfMaterials, outputPath: string): Promise<void>` — serializes BOM with `JSON.stringify(bom, null, 2)` and calls `writeAtomic`
     - Export `exportCsv(bom: BillOfMaterials, outputPath: string): Promise<void>` — uses `csv-stringify/sync` `stringify` with header row `['category','name','quantity','unit','unit cost','total cost','notes']`, one row per line item across all categories, calls `writeAtomic`
     - _Requirements: 5.1–5.6_
 
-  - [~] 9.2 Write property test — Property 4: JSON export round-trip preserves all data
+  - [x] 9.2 Write property test — Property 4: JSON export round-trip preserves all data
     - **Property 4: JSON export round-trip preserves all data**
     - **Validates: Requirements 5.3**
     - Given any `BillOfMaterials` with any number of valid line items, when `exportJson` writes to a temp path and the file is parsed back, then line item count, all field values, category subtotals, and `grandTotal` are identical to the original
     - Use `fc.record` to generate arbitrary valid BOMs; use real temp files in `os.tmpdir()`; clean up after each run; `numRuns: 100`
 
-  - [~] 9.3 Write unit tests for `exporter.ts`
+  - [x] 9.3 Write unit tests for `exporter.ts`
     - Given a valid BOM, when `exportJson` is called, then the output file contains valid JSON matching the BOM structure
     - Given a valid BOM, when `exportCsv` is called, then the output file has a header row and one data row per line item
     - Given a file system error during write, when `exportJson` or `exportCsv` is called, then an `ExportError` is thrown and no partial file remains

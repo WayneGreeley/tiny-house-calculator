@@ -130,15 +130,15 @@ Build a local TypeScript/Node.js CLI tool (`thc`) that manages tiny house build 
     - Mock the repository; do not perform real file I/O
     - _Requirements: 1.1–1.9_
 
-- [ ] 6. Implement `LineItemService`
-  - [~] 6.1 Implement `src/services/LineItemService.ts`
+- [x] 6. Implement `LineItemService`
+  - [x] 6.1 Implement `src/services/LineItemService.ts`
     - `add(projectName, fields): Promise<Result<LineItem>>` — validates all fields, assigns UUID v4 id, computes `totalCost` via `computeTotalCost`, appends to project's `lineItems`, persists
     - `update(projectName, itemId, fields): Promise<Result<LineItem>>` — finds item by id (throws `NotFoundError` if absent), validates only provided fields, recomputes `totalCost`, persists; leaves item unchanged on validation failure
     - `remove(projectName, itemId): Promise<Result<void>>` — finds item by id (throws `NotFoundError` if absent), removes from project, persists
     - `list(projectName, category?): Promise<Result<LineItem[]>>` — returns all items or filtered by category; returns empty array when no matches
     - _Requirements: 2.1–2.11, 3.1_
 
-  - [~] 6.2 Write unit tests for `LineItemService`
+  - [x] 6.2 Write unit tests for `LineItemService`
     - Given valid fields, when `add` is called, then the item is persisted with a UUID id and correct `totalCost`
     - Given an invalid quantity (≤ 0 or out of range), when `add` is called, then a `ValidationError` is returned and no item is added
     - Given a negative unit cost, when `add` is called, then a `ValidationError` is returned

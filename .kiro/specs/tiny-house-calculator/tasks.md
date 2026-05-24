@@ -148,12 +148,12 @@ Build a local TypeScript/Node.js CLI tool (`thc`) that manages tiny house build 
     - Mock the repository; do not perform real file I/O
     - _Requirements: 2.1–2.11, 3.1_
 
-- [ ] 7. Implement `BomService`
-  - [~] 7.1 Implement `src/services/BomService.ts`
+- [x] 7. Implement `BomService`
+  - [x] 7.1 Implement `src/services/BomService.ts`
     - `build(projectName): Promise<Result<BillOfMaterials>>` — loads project, groups line items by category (omitting empty categories and items with quantity 0), computes subtotals via `computeCategorySubtotals`, computes `grandTotal` via `computeGrandTotal`, sets `generatedDate` to `new Date().toISOString().slice(0, 10)`
     - _Requirements: 3.2–3.4, 4.1–4.7_
 
-  - [~] 7.2 Write unit tests for `BomService`
+  - [x] 7.2 Write unit tests for `BomService`
     - Given a project with line items in multiple categories, when `build` is called, then items are grouped correctly and subtotals match
     - Given a project with no line items, when `build` is called, then `grandTotal` is 0 and `categories` is empty
     - Given a line item with quantity 0, when `build` is called, then that item is excluded from the BOM
@@ -161,7 +161,7 @@ Build a local TypeScript/Node.js CLI tool (`thc`) that manages tiny house build 
     - Mock the repository; do not perform real file I/O
     - _Requirements: 3.2–3.4, 4.1–4.7_
 
-- [~] 8. Checkpoint — Ensure all service and repository tests pass
+- [x] 8. Checkpoint — Ensure all service and repository tests pass
   - Ensure all tests pass, ask the user if questions arise.
 
 - [ ] 9. Implement the export module

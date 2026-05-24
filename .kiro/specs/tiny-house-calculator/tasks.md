@@ -112,15 +112,15 @@ Build a local TypeScript/Node.js CLI tool (`thc`) that manages tiny house build 
     - Mock `fs/promises` using `vi.mock`; do not perform real file I/O in tests
     - _Requirements: 1.1_
 
-- [ ] 5. Implement `ProjectService`
-  - [~] 5.1 Implement `src/services/ProjectService.ts`
+- [x] 5. Implement `ProjectService`
+  - [x] 5.1 Implement `src/services/ProjectService.ts`
     - `create(name, description?): Promise<Result<Project>>` — validates inputs, checks case-insensitive name uniqueness (throws `ConflictError`), assigns UUID v4 id, sets `createdAt` to `new Date().toISOString()`, persists via repository
     - `list(): Promise<Result<Project[]>>` — returns all projects (empty array when none)
     - `get(name): Promise<Result<Project>>` — finds by case-insensitive name; throws `NotFoundError` if absent
     - `delete(name): Promise<Result<void>>` — finds by case-insensitive name; removes project and all its line items; throws `NotFoundError` if absent
     - _Requirements: 1.1–1.9_
 
-  - [~] 5.2 Write unit tests for `ProjectService`
+  - [x] 5.2 Write unit tests for `ProjectService`
     - Given a valid name, when `create` is called, then the project is persisted with a UUID id and ISO timestamp
     - Given a duplicate name (case-insensitive), when `create` is called, then a `ConflictError` is returned
     - Given an empty/whitespace name, when `create` is called, then a `ValidationError` is returned

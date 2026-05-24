@@ -135,21 +135,6 @@ The project uses a dual testing approach:
 
 All monetary calculations use `Decimal.js` with `ROUND_HALF_UP` to avoid floating-point errors.
 
-## Current Status
-
-✅ **Completed:**
-- Task 1: Project structure, types, constants, errors
-- Task 2: Cost calculator and input validator with property-based tests
-- Task 3: Checkpoint (all tests passing)
-
-🚧 **In Progress:**
-- Task 4: Repository layer
-- Task 5: Project service
-- Task 6: Line item service
-- Task 7: BOM service
-- Task 9: Export module
-- Task 10: CLI layer
-
 ## License
 
 MIT

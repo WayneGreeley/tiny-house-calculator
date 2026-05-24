@@ -97,15 +97,15 @@ Build a local TypeScript/Node.js CLI tool (`thc`) that manages tiny house build 
 - [x] 3. Checkpoint — Ensure all calculator and validator tests pass
   - Ensure all tests pass, ask the user if questions arise.
 
-- [ ] 4. Implement the repository layer
-  - [ ] 4.1 Implement `src/repository/FileRepository.ts`
+- [x] 4. Implement the repository layer
+  - [x] 4.1 Implement `src/repository/FileRepository.ts`
     - Resolve data directory to `~/.tiny-house-calculator/` using `os.homedir()`
     - Export `readStore(): Promise<DataStore>` — reads `data.json`; returns `{ version: 1, projects: [] }` if file does not exist; wraps `fs` errors in `StorageError`
     - Export `writeStore(store: DataStore): Promise<void>` — serializes to JSON (2-space indent), writes to `data.json.tmp`, then `fs.rename` to `data.json`; wraps errors in `StorageError`
     - Export `ensureDataDir(): Promise<void>` — creates the directory with `fs.mkdir({ recursive: true })` if absent
     - _Requirements: 1.1, 1.6_
 
-  - [~] 4.2 Write unit tests for `FileRepository`
+  - [x] 4.2 Write unit tests for `FileRepository`
     - Given the data file does not exist, when `readStore` is called, then it returns the default empty store
     - Given a valid `DataStore`, when `writeStore` is called, then the file is written atomically (tmp → rename) and `readStore` returns the same data
     - Given an unwritable directory, when `writeStore` is called, then a `StorageError` is thrown

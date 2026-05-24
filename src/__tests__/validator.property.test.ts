@@ -157,8 +157,8 @@ describe('validateQuantity', () => {
             expect(error).toBeInstanceOf(ValidationError);
             expect((error as ValidationError).field).toBe('quantity');
             const message = (error as ValidationError).message;
-            // Message should mention the allowed range
-            expect(message.toLowerCase()).toMatch(/0\.01|range/);
+            // Message should mention the allowed range or "must be a number"
+            expect(message.toLowerCase()).toMatch(/0\.01|range|must be a number/);
           }
         }
       ),

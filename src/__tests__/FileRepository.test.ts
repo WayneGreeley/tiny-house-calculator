@@ -89,7 +89,7 @@ describe('FileRepository', () => {
       await vol.promises.writeFile(
         '/home/testuser/.tiny-house-calculator/data.json',
         JSON.stringify(testStore),
-        'utf-8'
+        { encoding: 'utf-8' }
       );
 
       // When: readStore is called
@@ -105,7 +105,7 @@ describe('FileRepository', () => {
       await vol.promises.writeFile(
         '/home/testuser/.tiny-house-calculator/data.json',
         'invalid json {',
-        'utf-8'
+        { encoding: 'utf-8' }
       );
 
       // When: readStore is called
@@ -119,7 +119,7 @@ describe('FileRepository', () => {
       await vol.promises.writeFile(
         '/home/testuser/.tiny-house-calculator/data.json',
         '{}',
-        'utf-8'
+        { encoding: 'utf-8' }
       );
       vi.spyOn(vol.promises, 'readFile').mockRejectedValueOnce(
         Object.assign(new Error('Permission denied'), { code: 'EACCES' })
@@ -207,7 +207,7 @@ describe('FileRepository', () => {
       await vol.promises.writeFile(
         '/home/testuser/.tiny-house-calculator/data.json',
         JSON.stringify({ version: 1, projects: [] }),
-        'utf-8'
+        { encoding: 'utf-8' }
       );
 
       const newStore: DataStore = {
@@ -255,7 +255,7 @@ describe('FileRepository', () => {
       await vol.promises.writeFile(
         '/home/testuser/.tiny-house-calculator/data.json.tmp',
         'temp',
-        'utf-8'
+        { encoding: 'utf-8' }
       );
 
       vi.spyOn(vol.promises, 'rename').mockRejectedValueOnce(
